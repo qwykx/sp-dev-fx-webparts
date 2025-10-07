@@ -63,6 +63,10 @@ Version|Date|Comments
 
 > This sample can also be opened with [VS Code Remote Development](https://code.visualstudio.com/docs/remote/remote-overview). Visit <https://aka.ms/spfx-devcontainer> for further instructions.
 
+## Automated release
+
+Push a tag that matches the pattern `v*` (for example, `v1.11.0`) to trigger the workflow defined in `.github/workflows/package-and-release.yml`. The workflow installs dependencies, runs `gulp bundle --ship` followed by `gulp package-solution --ship`, and publishes the generated package at `sharepoint/solution/react-page-navigator.sppkg` as a GitHub release asset. You can also run the workflow manually and supply a tag name if you prefer to create the release on demand.
+
 ## Contributors
 
 * [Aakash Bhardwaj](https://github.com/aakashbhardwaj619)

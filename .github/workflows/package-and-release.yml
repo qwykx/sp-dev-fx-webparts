@@ -1,0 +1,57 @@
+name: Package and Release Page Navigator
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag name to create or update (for example, v1.11.0)'
+        required: true
+      release_name:
+        description: 'Release title (defaults to "React Page Navigator <tag>")'
+        required: false
+        default: ''
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}
+      RELEASE_NAME: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.release_name || format('React Page Navigator {0}', github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name) }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 18.19.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.19.0
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Bundle solution (ship)
+        run: npx gulp bundle --ship
+
+      - name: Package solution (ship)
+        run: npx gulp package-solution --ship
+
+      - name: Upload SPFx package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: react-page-navigator-sppkg
+          path: sharepoint/solution/react-page-navigator.sppkg
+
+      - name: Create or update GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: ${{ env.RELEASE_NAME }}
+          files: sharepoint/solution/react-page-navigator.sppkg
+          target_commitish: ${{ github.sha }}
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

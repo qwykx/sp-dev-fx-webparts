@@ -34,3 +34,7 @@ obj
 
 # special folders
 .heft
+# .CER Certificates
+*.cer
+# .PEM Certificates
+*.pem
