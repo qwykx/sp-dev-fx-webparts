@@ -17,6 +17,8 @@ on:
 jobs:
   build-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}
       RELEASE_NAME: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.release_name || format('React Page Navigator {0}', github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name) }}
